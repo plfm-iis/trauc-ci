@@ -1,0 +1,11 @@
+ARG DOCKER_IMAGE_BASE
+ARG DOCKER_BUILD_SCRIPT
+
+FROM ${DOCKER_IMAGE_BASE}
+
+USER user
+WORKDIR /home/user
+ENV HOME="/home/user"
+ADD ${DOCKER_BUILD_SCRIPT} $HOME/build_and_run.sh
+
+RUN $HOME/build_and_run.sh

@@ -27,11 +27,7 @@ RUN apt-get update && \
 		libmpfr-dev \
 		make \
 		mono-devel \
-		ninja-build \
 		python3 \
-		python3-setuptools \
-		python2.7 \
-		python-setuptools \
 		sudo
 
 # Create `user` user for container with password `user`.  and give it
