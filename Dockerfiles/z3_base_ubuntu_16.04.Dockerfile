@@ -27,8 +27,13 @@ RUN apt-get update && \
 		libmpfr-dev \
 		make \
 		mono-devel \
-		python3 \
 		sudo
+
+RUN add-apt-repository ppa:deadsnakes/ppa && \
+	apt-get update && \
+	apt-get install python3.6 python3-pip
+
+RUN pip3 install argparse typing
 
 # Create `user` user for container with password `user`.  and give it
 # password-less sudo access
