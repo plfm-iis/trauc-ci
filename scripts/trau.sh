@@ -9,7 +9,7 @@ set -o pipefail
 wget https://www.antlr.org/download/antlr4-cpp-runtime-4.7.2-source.zip\
 	-O antlr.zip
 
-unzip antlr.zip 0d antlr
+unzip antlr.zip -d antlr
 cd antlr
 mkdir build && mkdir run
 cd build
@@ -23,8 +23,8 @@ mkdir -p $TRAU_PATH
 git clone https://github.com/diepbp/Trau.git $TRAU_PATH
 
 TRAU_CONFIG="${TRAU_PATH}/build/config.mk"
-echo "CUSTOM_Z3_LIB_PATH := ${Z3_BUILD_DIR}/lib" > $TRAU_CONFIG
-echo "CUSTOM_Z3_INCLUDE_PATH := ${Z3_BUILD_DIR}/include" >> $TRAU_CONFIG
+echo "CUSTOM_Z3_LIB_PATH := ${Z3_BUILD_LIB}" > $TRAU_CONFIG
+echo "CUSTOM_Z3_INCLUDE_PATH := ${Z3_BUILD_INCLUDE}" >> $TRAU_CONFIG
 echo "ANTLR_RUNTIME_PATH := /usr/local/include/antlr4-runtime" >>  $TRAU_CONFIG
 echo "" >> $TRAU_CONFIG
 echo "FOPENMP := " >> $TRAU_CONFIG
@@ -32,7 +32,12 @@ echo "ifeq ($(shell uname -s) ,Darwin)" >> $TRAU_CONFIG
 echo "    FOPENMP := " >> $TRAU_CONFIG
 echo "endif " >> $TRAU_CONFIG
 
-export LD_LIBRARY_PATH="/usr/local/lib"    # export it
+sudo cp "$(Z3_BUILD_LIB)/lib*" /usr/local/lib64
+export LD_LIBRARY_PATH="/usr/local/lib64"    # export it
 cd "${TRAU_PATH}/build"; make
 
 sudo ln "${TRAU_PATH}/build/trau" /usr/bin/trau
+
+#Run benchmark
+
+

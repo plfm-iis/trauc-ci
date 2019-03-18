@@ -1,0 +1,29 @@
+diff -Naur z3-z3-4.4.1.0.orig/src/util/debug.cpp z3-z3-4.4.1.0/src/util/debug.cpp
+--- z3-z3-4.4.1.0.orig/src/util/debug.cpp	2015-10-05 11:07:18.000000000 +0800
++++ z3-z3-4.4.1.0/src/util/debug.cpp	2019-03-18 16:03:09.740968504 +0800
+@@ -76,7 +76,7 @@
+     for (;;) {
+         std::cerr << "(C)ontinue, (A)bort, (S)top, (T)hrow exception, Invoke (G)DB\n";
+         char result;
+-        bool ok = (std::cin >> result);
++        bool ok = (bool)(std::cin >> result);
+         if (!ok) exit(ERR_INTERNAL_FATAL); // happens if std::cin is eof or unattached.
+         switch(result) {
+         case 'C':
+diff -Naur z3-z3-4.4.1.0.orig/src/util/mpz.h z3-z3-4.4.1.0/src/util/mpz.h
+--- z3-z3-4.4.1.0.orig/src/util/mpz.h	2015-10-05 11:07:18.000000000 +0800
++++ z3-z3-4.4.1.0/src/util/mpz.h	2019-03-18 16:03:09.736968692 +0800
+@@ -659,6 +659,13 @@
+         del(a);
+         a.m_val = val;
+     }
++    
++    void set(mpz & a, long unsigned int val) {
++        if (val <= INT_MAX)
++            set(a, static_cast<int>(val));
++        else
++            set(a, static_cast<int64>(static_cast<uint64>(val)));
++    }
+ 
+     void set(mpz & a, unsigned val) {
+         if (val <= INT_MAX)
