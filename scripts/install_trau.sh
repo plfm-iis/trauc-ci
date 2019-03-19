@@ -28,11 +28,11 @@ git clone https://github.com/diepbp/Trau.git $TRAU_PATH
 cd $TRAU_PATH
 
 # Install z3-4.4.1.0
-unzip z3-z3-4.4.1.0.zip -d z3-z3-4.4.1.0
+unzip z3-z3-4.4.1.0.zip
 mv $HOME/z3-4.4.1.0.patches ./
 patch -p0 < z3-4.4.1.0.patches
 cd z3-z3-4.4.1.0
-python3 scripts/mk_make.py --prefix="$HOME"
+python3.6 scripts/mk_make.py --prefix="$HOME"
 cd build
 make && make install
 

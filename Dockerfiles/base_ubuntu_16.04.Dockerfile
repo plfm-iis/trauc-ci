@@ -41,6 +41,7 @@ RUN apt-get update && \
 	make \
 	mono-devel \
 	uuid-dev \
+    unzip \
 	sudo
 
 RUN add-apt-repository ppa:deadsnakes/ppa && \
@@ -77,7 +78,7 @@ RUN \
     sudo make install
 
 # Clean up $HOME
-RUN rm -rf "${HOME}/*"
+RUN rm -rf /home/user/* 
 
 RUN mkdir -p ${Z3_SRC_DIR} && \
     mkdir -p ${Z3_BUILD_DIR} && \
