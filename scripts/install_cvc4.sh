@@ -1,0 +1,13 @@
+#!/bin/bash
+# Executed by Dockerfiles
+
+SCRIPT_DIR="$( cd ${BASH_SOURCE[0]%/*} ; echo $PWD )"
+set -x
+set -e
+set -o pipefail
+
+# Install CVC4
+wget http://cvc4.cs.stanford.edu/downloads/builds/x86_64-linux-opt/cvc4-1.6-x86_64-linux-opt \
+        -O cvc4
+
+sudo mv cvc4 /usr/bin/cvc4

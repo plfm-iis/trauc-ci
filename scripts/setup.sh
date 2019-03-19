@@ -23,10 +23,20 @@ docker build -t "${BASE_IMAGE_NAME}" \
     - < "${BASE_DOCKER_FILE}"
 
 # Build an image with trau installed
+BUILD_OPTS=()
 TRAU_DOCKER_FILE="${DOCKER_FILE_DIR}/trau_build.Dockerfile"
 docker build \
   -f "${TRAU_DOCKER_FILE}" \
   -t "${TRAU_DOCKER_IMAGE}" \
+  "--build-arg DOCKER_IMAGE_BASE=${BASE_IMAGE_NAME}"
+  .
+# Build an image with cvc installed
+BUILD_OPTS=()
+BUILD_OPTS+=("--build-arg" "SCRIPT='install_cvc4.sh'")
+BUILD_OPTS+=("--build-arg" "SCRIPT_ARG=''")
+docker build \
+  -f "${S_SCRIPT_DOCKER_FILE}" \
+  -t "${CVC4_DOCKER_IMAGE}" \
   "--build-arg DOCKER_IMAGE_BASE=${BASE_IMAGE_NAME}"
   .
 
@@ -36,9 +46,8 @@ BUILD_OPTS=()
 BUILD_OPTS+=("--build-arg" "SCRIPT='install_original_z3.sh'")
 BUILD_OPTS+=("--build-arg" "SCRIPT_ARG=''")
 
-Z3_DOCKER_FILE="${DOCKER_FILE_DIR}/build_single_script.Dockerfile"
 docker build \
-  -f "${Z3_DOCKER_FILE}" \
+  -f "${S_SCRIPT_DOCKER_FILE}" \
   -t "${Z3_DOCKER_IMAGE}" \
   "--build-arg DOCKER_IMAGE_BASE=${BASE_IMAGE_NAME}"
   "${BUILD_OPTS[@]}" \
