@@ -29,7 +29,7 @@ docker build \
   -m 4g \
   -f "${Z3_DOCKER_FILE}" \
   -t "${TARGET_IMAGE}" \
-  "--build-arg DOCKER_IMAGE_BASE=${BASE_IMAGE}"
+  "--build-arg DOCKER_IMAGE_BASE=${BASE_IMAGE_NAME}"
   "${BUILD_OPTS[@]}" \
   .
 

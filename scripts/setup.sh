@@ -13,17 +13,21 @@ mkdir -p $OUTPUT_DIR
 # The base image contains all the dependencies we want to build Z3.
 BASE_DOCKER_FILE="${DOCKER_FILE_DIR}/base_ubuntu_16.04.Dockerfile"
 
-docker build \
-  -t "${BASE_IMAGE}" \
-  -f "${BASE_DOCKER_FILE}"
-  .
+BUILD_OPTS=()
+BUILD_OPTS+=("--build-arg" "Z3_SRC_DIR=${Z3_SRC_DIR}")
+BUILD_OPTS+=("--build-arg" "Z3_BUILD_DIR=${Z3_BUILD_DIR}")
+BUILD_OPTS+=("--build-arg" "BENCHMARK_PATH=${BENCHMARK_PATH}")
+BUILD_OPTS+=("--build-arg" "BENCHMARK_REPO=${BENCHMARK_REPO}")
+docker build -t "${BASE_IMAGE_NAME}" \
+    "${BUILD_OPTS[@]}" \
+    - < "${BASE_DOCKER_FILE}"
 
 # Build an image with trau installed
 TRAU_DOCKER_FILE="${DOCKER_FILE_DIR}/trau_build.Dockerfile"
 docker build \
   -f "${TRAU_DOCKER_FILE}" \
   -t "${TRAU_DOCKER_IMAGE}" \
-  "--build-arg DOCKER_IMAGE_BASE=${BASE_IMAGE}"
+  "--build-arg DOCKER_IMAGE_BASE=${BASE_IMAGE_NAME}"
   .
 
 
@@ -36,7 +40,7 @@ Z3_DOCKER_FILE="${DOCKER_FILE_DIR}/build_single_script.Dockerfile"
 docker build \
   -f "${Z3_DOCKER_FILE}" \
   -t "${Z3_DOCKER_IMAGE}" \
-  "--build-arg DOCKER_IMAGE_BASE=${BASE_IMAGE}"
+  "--build-arg DOCKER_IMAGE_BASE=${BASE_IMAGE_NAME}"
   "${BUILD_OPTS[@]}" \
   .
 

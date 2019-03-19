@@ -11,7 +11,7 @@ ENV \
     Z3_BUILD_DIR=${Z3_BUILD_DIR} \
     Z3_BENCHMARK=${Z3_BENCHMARK} \
     BENCHMARK_REPO=${BENCHMARK_REPO} \
-    BENCHMARK_PATH=${BENCHMARK_PATH} \
+    BENCHMARK_PATH=${BENCHMARK_PATH}
 
 RUN apt-get update && \
     apt-get install build-essential software-properties-common -y && \
@@ -45,7 +45,7 @@ RUN apt-get update && \
 
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-    apt-get install python3.6 python3-pip
+    apt-get install -y python3.6 python3-pip
 
 RUN pip3 install argparse typing
 
@@ -80,6 +80,6 @@ RUN \
 RUN rm -rf "${HOME}/*"
 
 RUN mkdir -p ${Z3_SRC_DIR} && \
-    rmkdir -p ${Z3_BUILD_DIR} && \
-    rmkdir -p ${Z3_BENCHMARK}
+    mkdir -p ${Z3_BUILD_DIR} && \
+    mkdir -p ${BENCHMARK_PATH}
 
