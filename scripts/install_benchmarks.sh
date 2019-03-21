@@ -10,7 +10,6 @@ Z3_SINICA="${HOME}/z3-sinica"
 mkdir -p $Z3_SINICA
 
 git clone --branch master --depth 1 ${BENCHMARK_REPO} $Z3_SINICA
-mv "${Z3_SINICA}/${BENCHMARK_PATH}" ${Z3_BENCHMARK}
+mv ${Z3_SINICA}/benchmarks/* ${BENCHMARK_PATH}
 
 cd $HOME
-rm -rf ${Z3_SINICA}

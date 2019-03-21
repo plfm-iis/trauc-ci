@@ -17,5 +17,4 @@ cd ${Z3_BUILD_DIR}
 
 cmake ${Z3_SRC_DIR}
 make
-make install DESTDIR="${HOME}/"
-sudo ln "${HOME}/usr/local/bin/z3" /usr/bin/${COMMAND_NAME}
+sudo ln "${Z3_BUILD_DIR}/z3" /usr/bin/${COMMAND_NAME}
