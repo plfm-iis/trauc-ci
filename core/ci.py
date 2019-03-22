@@ -64,7 +64,7 @@ def run_target(tid):
         else:
             cmd = "cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh " + \
                     tname + " " + benchmark_name + " " + tid + " > /dev/null"
-        cmods.append(cmd)
+        cmds.append(cmd)
 
     # Execute
     i = 0
