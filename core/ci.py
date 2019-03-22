@@ -50,35 +50,31 @@ def run_target(tid):
         logging.info(update_sql("UPDATE tools SET days_to_run = " + str(cycle) +" WHERE id=" + tid))
         exit()
 
-    # set commands
-    if "z3" in tname:
-        cmd1 = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
-                tname + " z3_ubuntu Kaluza_unsat " + tid + " -" + " > /dev/null"
-        cmd2 = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
-                tname + " z3_ubuntu PyEx_unsat " + tid + " -" + " > /dev/null"
-    elif "cvc" in tname:
-        cmd1 = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
-                tname + " cvc4_ubuntu Kaluza_unsat " + tid + " -" + " > /dev/null"
-        cmd2 = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
-                tname + " cvc4_ubuntu PyEx_unsat " + tid + " -" + " > /dev/null"
-    else:
-        cmd1 = "cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh " + \
-                tname + " Kaluza_unsat " + tid + " > /dev/null"
-        cmd2 = "cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh " + \
-                tname + " PyEx_unsat " + tid + " > /dev/null"
+    # Get benchmarks
+    benchmarks = run_sql("SELECT name from benchmark_names;").splitlines()
+    cmds = []
+    for benchmark_name in benchmarks:
+        # Set commands
+        if "z3" in tname:
+            cmd = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
+                    tname + " z3_ubuntu " + benchmark_name + " " + tid + " -" + " > /dev/null"
+        elif "cvc" in tname:
+            cmd = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
+                    tname + " cvc4_ubuntu " + benchmark_name + " " + tid + " -" + " > /dev/null"
+        else:
+            cmd = "cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh " + \
+                    tname + " " + benchmark_name + " " + tid + " > /dev/null"
+        cmods.append(cmd)
 
     # Execute
-    logging.info(cmd1)
-    if os.system(cmd1) != 0:
-        logging.info("Failed: " + tname + " Kaluza_unsat")
-    else:
-        logging.info("Successed: " + tname + " Kaluza_unsat")
-
-    logging.info(cmd2)
-    if os.system(cmd2) != 0:
-        logging.info("Failed: " + tname + " PyEx_unsat")
-    else:
-        logging.info("Successed: " + tname + " PyEx_unsat")
+    i = 0
+    for cmd in cmds:
+        logging.info(cmd)
+        if os.system(cmd) != 0:
+            logging.info("Failed: " + tname + benchmark_name[i])
+        else:
+            logging.info("Succeeded: " + tname + benchmark_name[i])
+        i = i + 1
     exit()
 
 
