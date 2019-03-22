@@ -31,7 +31,7 @@ def get_targets():
 
 def run_target(tid):
     [tname, cycle, command, repo_url, branch_name, days_to_run] = \
-            run_sql("SELECT name, test_cycle, command, repo_url, branch_name, days_to_run FROM tools WHERE id=" + tid).split(",")
+            run_sql("SELECT name, test_cycle, command, repo_url, branch_name, days_to_run FROM tools WHERE id=" + tid).replace("\n","").split(",")
 
     if len(days_to_run) == 0:
         logging.info(update_sql("UPDATE tools SET days_to_run = 0 WHERE id=" + tid))
@@ -44,32 +44,42 @@ def run_target(tid):
     if days_to_run == 0:
         days_to_run = cycle
         logging.info("Running ci for" + tname)
-        update_sql("UPDATE tools SET days_to_run = " + str(cycle) +" WHERE id=" + tid)
+        logging.info(update_sql("UPDATE tools SET days_to_run = " + str(cycle) +" WHERE id=" + tid))
     else:
         logging.info(str(days_to_run) + "/" + str(cycle) + " days for " + tname)
-        update_sql("UPDATE tools SET days_to_run = " + str(cycle) +" WHERE id=" + tid)
-        return
+        logging.info(update_sql("UPDATE tools SET days_to_run = " + str(cycle) +" WHERE id=" + tid))
+        exit()
 
     # set commands
     if "z3" in tname:
         cmd1 = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
-                tname + " z3_ubuntu Kaluza_unsat " + tid + " -" + " > /dev/null 2&>1"
+                tname + " z3_ubuntu Kaluza_unsat " + tid + " -" + " > /dev/null"
         cmd2 = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
-                tname + " z3_ubuntu PyEx_unsat " + tid + " -" + " > /dev/null 2&>1"
+                tname + " z3_ubuntu PyEx_unsat " + tid + " -" + " > /dev/null"
     elif "cvc" in tname:
         cmd1 = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
-                tname + " cvc4_ubuntu Kaluza_unsat " + tid + " -" + " > /dev/null 2&>1"
+                tname + " cvc4_ubuntu Kaluza_unsat " + tid + " -" + " > /dev/null"
         cmd2 = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
-                tname + " cvc4_ubuntu PyEx_unsat " + tid + " -" + " > /dev/null 2&>1"
+                tname + " cvc4_ubuntu PyEx_unsat " + tid + " -" + " > /dev/null"
     else:
         cmd1 = "cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh " + \
-                tname + " Kaluza_unsat " + tid + " > /dev/null 2&>1"
+                tname + " Kaluza_unsat " + tid + " > /dev/null"
         cmd2 = "cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh " + \
-                tname + " PyEx_unsat " + tid + " > /dev/null 2&>1"
+                tname + " PyEx_unsat " + tid + " > /dev/null"
 
     # Execute
-    os.popen(cmd1).read()
-    os.popen(cmd2).read()
+    logging.info(cmd1)
+    if os.system(cmd1) != 0:
+        logging.info("Failed: " + tname + " Kaluza_unsat")
+    else:
+        logging.info("Successed: " + tname + " Kaluza_unsat")
+
+    logging.info(cmd2)
+    if os.system(cmd2) != 0:
+        logging.info("Failed: " + tname + " PyEx_unsat")
+    else:
+        logging.info("Successed: " + tname + " PyEx_unsat")
+    exit()
 
 
 def main():
@@ -84,6 +94,7 @@ def main():
             children.append(child)
         else:
             run_target(target)
+            break
 
     for child in children:
         os.waitpid(child, 0)

@@ -27,6 +27,10 @@ mkdir -p $TRAU_PATH
 git clone https://github.com/diepbp/Trau.git $TRAU_PATH
 cd $TRAU_PATH
 
+# Set LANG for scripts/mk_make.py
+export LANG=C.UTF-8
+python3 -c 'import locale; print(locale.getpreferredencoding())'
+
 # Install z3-4.4.1.0
 unzip z3-z3-4.4.1.0.zip
 mv $HOME/z3-4.4.1.0.patches ./
@@ -47,7 +51,7 @@ echo "ifeq ($(shell uname -s) ,Darwin)" >> $TRAU_CONFIG
 echo "    FOPENMP := " >> $TRAU_CONFIG
 echo "endif " >> $TRAU_CONFIG
 
-sudo cp "$(HOME)/lib/lib*" /usr/local/lib
+sudo cp ${HOME}/lib/lib* /usr/local/lib
 export LD_LIBRARY_PATH="/usr/local/lib"    # export it
 
 # Finally, build Trau

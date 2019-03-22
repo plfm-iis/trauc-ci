@@ -23,13 +23,13 @@ docker build -t "${BASE_IMAGE_NAME}" \
     - < "${BASE_DOCKER_FILE}"
 
 # Build an image with trau installed
-# BUILD_OPTS=()
-# TRAU_DOCKER_FILE="${DOCKER_FILE_DIR}/trau_build.Dockerfile"
-# docker build \
-#   -f "${TRAU_DOCKER_FILE}" \
-#   -t "${TRAU_DOCKER_IMAGE}" \
-#   --build-arg DOCKER_IMAGE_BASE=${BASE_IMAGE_NAME} \
-#   .
+BUILD_OPTS=()
+TRAU_DOCKER_FILE="${DOCKER_FILE_DIR}/trau_build.Dockerfile"
+docker build \
+  -f "${TRAU_DOCKER_FILE}" \
+  -t "${TRAU_DOCKER_IMAGE}" \
+  --build-arg DOCKER_IMAGE_BASE=${BASE_IMAGE_NAME} \
+  .
 
 # Build an image with cvc installed
 BUILD_OPTS=()
