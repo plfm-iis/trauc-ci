@@ -47,7 +47,7 @@ def run_target(tid):
         logging.info(update_sql("UPDATE tools SET days_to_run = " + str(cycle) +" WHERE id=" + tid))
     else:
         logging.info(str(days_to_run) + "/" + str(cycle) + " days for " + tname)
-        logging.info(update_sql("UPDATE tools SET days_to_run = " + str(cycle) +" WHERE id=" + tid))
+        logging.info(update_sql("UPDATE tools SET days_to_run = " + str(days_to_run) +" WHERE id=" + tid))
         exit()
 
     # Get benchmarks
@@ -55,15 +55,15 @@ def run_target(tid):
     cmds = []
     for benchmark_name in benchmarks:
         # Set commands
-        if "z3" in tname:
-            cmd = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
-                    tname + " z3_ubuntu " + benchmark_name + " " + tid + " -" + " > /dev/null"
-        elif "cvc" in tname:
+        if "cvc" in tname:
             cmd = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
                     tname + " cvc4_ubuntu " + benchmark_name + " " + tid + " -" + " > /dev/null"
+        elif tname == "trau":
+            cmd = "cd $SCRIPT_HOME && ./scripts/run_trau_branch_by_cron.sh " + \
+                    tname + " " + benchmark_name + " " + tid + " " + repo_url + " > /dev/null"
         else:
             cmd = "cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh " + \
-                    tname + " " + benchmark_name + " " + tid + " > /dev/null"
+                    tname + " " + benchmark_name + " " + tid + " " + repo_url  + " > /dev/null"
         cmds.append(cmd)
 
     # Execute
@@ -71,9 +71,9 @@ def run_target(tid):
     for cmd in cmds:
         logging.info(cmd)
         if os.system(cmd) != 0:
-            logging.info("Failed: " + tname + benchmark_name[i])
+            logging.info("Failed: " + tname + " " + benchmarks[i])
         else:
-            logging.info("Succeeded: " + tname + benchmark_name[i])
+            logging.info("Succeeded: " + tname + " " + benchmarks[i])
         i = i + 1
     exit()
 
@@ -97,7 +97,7 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='/home/deploy/str_ci.log',\
+    logging.basicConfig(filename='/home/deploy/ci_logs/str_ci.log',\
             level=logging.INFO,\
             format='%(asctime)s %(message)s')
 

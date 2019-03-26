@@ -17,4 +17,10 @@ cd ${Z3_BUILD_DIR}
 
 cmake ${Z3_SRC_DIR}
 make
-sudo ln "${Z3_BUILD_DIR}/z3" /usr/bin/${COMMAND_NAME}
+
+if [ "${COMMAND_NAME}" == "trauc" ]
+then
+    sudo ln "${Z3_BUILD_DIR}/z3" /usr/bin/${COMMAND_NAME}
+else
+    sudo ln "${Z3_BUILD_DIR}/z3" /usr/bin/z3
+fi

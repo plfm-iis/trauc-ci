@@ -40,21 +40,4 @@ python3.6 scripts/mk_make.py --prefix="$HOME"
 cd build
 make && make install
 
-# Write config to $TRAU/build/config.mk
-TRAU_CONFIG="${TRAU_PATH}/build/config.mk"
-echo "CUSTOM_Z3_LIB_PATH := ${HOME}/lib" > $TRAU_CONFIG
-echo "CUSTOM_Z3_INCLUDE_PATH := ${HOME}/include" >> $TRAU_CONFIG
-echo "ANTLR_RUNTIME_PATH := /usr/local/include/antlr4-runtime" >>  $TRAU_CONFIG
-echo "" >> $TRAU_CONFIG
-echo "FOPENMP := " >> $TRAU_CONFIG
-echo "ifeq ($(shell uname -s) ,Darwin)" >> $TRAU_CONFIG
-echo "    FOPENMP := " >> $TRAU_CONFIG
-echo "endif " >> $TRAU_CONFIG
-
 sudo cp ${HOME}/lib/lib* /usr/local/lib
-export LD_LIBRARY_PATH="/usr/local/lib"    # export it
-
-# Finally, build Trau
-cd "${TRAU_PATH}/build"; make
-sudo ln "${TRAU_PATH}/build/Trau" /usr/bin/Trau
-

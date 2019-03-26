@@ -37,7 +37,7 @@ docker build \
   "DOCKER_IMAGE_BASE=${TARGET_IMAGE}" \
   .
 
-docker run --rm -a STDOUT -a STDERR ${TMP_IMAGE} \
+docker run --rm -a STDOUT -a STDERR --name ${TAG_NAME} ${TMP_IMAGE} \
 "${BENCHMARK_PATH}/ci_run.sh" ${TARGET} ${BENCHMARK_TARGET} \
 > "${OUTPUT_DIR}/${TARGET}.${BENCHMARK_TARGET}.log"
 

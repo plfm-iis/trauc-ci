@@ -8,7 +8,8 @@ S_SCRIPT_DOCKER_FILE="${DOCKER_FILE_DIR}/build_single_script.Dockerfile"
 BASE_IMAGE_NAME="base_ubuntu:16.04"
 Z3_DOCKER_IMAGE="z3_ubuntu:16.04"
 TRAU_DOCKER_IMAGE="trau_ubuntu:16.04"
-CVC4_DOCKER_IMAGE="cvc4_ubuntu:16.04"
+TRAU_BASE_IMAGE="trau_base_ubuntu:16.04"
+CVC4_IMAGE="cvc4_ubuntu:16.04"
 
 # Set CI variables
 Z3_SRC_DIR="/home/user/z3_src/"
