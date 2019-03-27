@@ -7,6 +7,7 @@ def run_sql(sql):
             -X \
             -t \
             -U pguser \
+            -h trauc-db -p 5432 \
             --set ON_ERROR_STOP=on \
             --set AUTOCOMMIT=off \
             -d ci \
@@ -19,6 +20,7 @@ def insert_sql(sql):
     return os.popen("psql \
             -X \
             -U pguser \
+            -h trauc-db -p 5432 \
             -d ci \
             -c" + "\"" + sql + "\"").read()
 
@@ -61,8 +63,22 @@ def main(tool_id, target, benchmark, commit):
     sql = sql + misc + ")"
 
     print(sql)
-    insert_sql(sql)
+    #insert_sql(sql)
 
+    # Parse log to ci_logs_full
+    full_log_dir = "/home/deploy/ci_logs_full/" + target + "-" + check_date + "/"
+    os.system("rm -rf " + full_log_dir) 
+    os.system("mkdir " + full_log_dir) 
+    output = full_log_dir + benchmark + "." + check_date + "." + target + ".log"
+    os.system("touch " + output)
+    for line in os.popen("cat " + log).read().splitlines():
+        if "LOG.ERR" in line:
+            output = full_log_dir + benchmark + "." + check_date + "." + target + ".log.err"
+            os.system("touch " + output)
+        elif "LOG.END" in line:
+            break
+        else:
+            os.system("echo \"" + line + "\" >> " + output)
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:

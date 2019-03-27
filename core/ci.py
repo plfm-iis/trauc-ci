@@ -11,6 +11,7 @@ def run_sql(sql):
             -X \
             -t \
             -U pguser \
+            -h trauc-db -p 5432 \
             --set ON_ERROR_STOP=on \
             --set AUTOCOMMIT=off \
             -d ci \
@@ -23,6 +24,7 @@ def update_sql(sql):
     logging.info(sql)
     return os.popen("psql \
             -U pguser \
+            -h trauc-db -p 5432 \
             -d ci \
             -c" + "\"" + sql + "\"").read()
 
@@ -51,7 +53,9 @@ def run_target(tid):
         exit()
 
     # Get benchmarks
-    benchmarks = run_sql("SELECT name from benchmark_names;").splitlines()
+    benchmark_type = os.environ["CI_BENCHMARK_TYPE"]
+    benchmark_type_id = run_sql("SELECT id from benchmark_types WHERE name=\'" + benchmark_type + "\';").replace("\n", "")
+    benchmarks = run_sql("SELECT name from benchmark_names WHERE benchmark_type_id=" + benchmark_type_id + ";").splitlines()
     cmds = []
     for benchmark_name in benchmarks:
         # Set commands
