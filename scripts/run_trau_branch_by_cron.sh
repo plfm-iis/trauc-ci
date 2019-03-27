@@ -2,14 +2,14 @@
 
 # This script should be set as cron job
 # Usage:
-#   ./run_trau_branch_as_cron.sh <TARGET> <BENCHMARK> <Tool_id> <Repo_URL>
+#   ./run_trau_branch_as_cron.sh <TARGET> <BENCHMARK> <Tool_id> <Repo_URL> <Branch>
 #   <BENCHMARK> should contain no '/' at its end
 
 TARGET=$1
 BENCHMARK=$2
 TOOL_ID=$3
 REPO_URL=$4
-BRANCH="master"
+BRANCH=$5
 
 SCRIPT_DIR="$( cd ${BASH_SOURCE[0]%/*} ; echo $PWD )"
 source "${SCRIPT_DIR}/ci_defaults.sh"

@@ -32,11 +32,18 @@ def get_targets():
     return run_sql("SELECT id FROM tools")
 
 def run_target(tid):
-    [tname, cycle, command, repo_url, branch_name, days_to_run] = \
-            run_sql("SELECT name, test_cycle, command, repo_url, branch_name, days_to_run FROM tools WHERE id=" + tid).replace("\n","").split(",")
+    [tname, cycle, command, repo_url, branch_name] = \
+            run_sql("SELECT name, test_cycle, command, repo_url, branch_name FROM tools WHERE id=" + tid).replace("\n","").split(",")
 
+    # Get benchmarks
+    benchmark_type = os.environ["CI_BENCHMARK_TYPE"]
+    benchmark_type_id = run_sql("SELECT id from benchmark_types WHERE name=\'" + benchmark_type + "\';").replace("\n", "")
+
+    # Verify days to run
+    [d_id, days_to_run] = \
+            run_sql("SELECT id,days from days_to_runs WHERE benchmark_type_id=" + benchmark_type_id + " AND tool_id=" + tid + ";").replace("\n", "").split(",")
     if len(days_to_run) == 0:
-        logging.info(update_sql("UPDATE tools SET days_to_run = 0 WHERE id=" + tid))
+        logging.info(update_sql("UPDATE days_to_runs SET days = 1 WHERE id=" + d_id))
     else:
         days_to_run = int(days_to_run) - 1
 
@@ -46,15 +53,14 @@ def run_target(tid):
     if days_to_run == 0:
         days_to_run = cycle
         logging.info("Running ci for" + tname)
-        logging.info(update_sql("UPDATE tools SET days_to_run = " + str(cycle) +" WHERE id=" + tid))
+        logging.info(update_sql("UPDATE days_to_runs SET days = " + str(cycle) +" WHERE id=" + d_id))
     else:
         logging.info(str(days_to_run) + "/" + str(cycle) + " days for " + tname)
-        logging.info(update_sql("UPDATE tools SET days_to_run = " + str(days_to_run) +" WHERE id=" + tid))
+        logging.info(update_sql("UPDATE days_to_runs SET days = " + str(days_to_run) +" WHERE id=" + d_id))
         exit()
 
-    # Get benchmarks
-    benchmark_type = os.environ["CI_BENCHMARK_TYPE"]
-    benchmark_type_id = run_sql("SELECT id from benchmark_types WHERE name=\'" + benchmark_type + "\';").replace("\n", "")
+
+    # Fetch benchmark target and run
     benchmarks = run_sql("SELECT name from benchmark_names WHERE benchmark_type_id=" + benchmark_type_id + ";").splitlines()
     cmds = []
     for benchmark_name in benchmarks:
@@ -64,10 +70,10 @@ def run_target(tid):
                     tname + " cvc4_ubuntu " + benchmark_name + " " + tid + " -" + " > /dev/null"
         elif tname == "trau":
             cmd = "cd $SCRIPT_HOME && ./scripts/run_trau_branch_by_cron.sh " + \
-                    tname + " " + benchmark_name + " " + tid + " " + repo_url + " > /dev/null"
+                    tname + " " + benchmark_name + " " + tid + " " + repo_url + " " + branch_name +  " > /dev/null"
         else:
             cmd = "cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh " + \
-                    tname + " " + benchmark_name + " " + tid + " " + repo_url  + " > /dev/null"
+                    tname + " " + benchmark_name + " " + tid + " " + repo_url  + " " + branch_name + " > /dev/null"
         cmds.append(cmd)
 
     # Execute
