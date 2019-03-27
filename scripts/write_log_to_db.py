@@ -63,10 +63,10 @@ def main(tool_id, target, benchmark, commit):
     sql = sql + misc + ")"
 
     print(sql)
-    #insert_sql(sql)
+    insert_sql(sql)
 
     # Parse log to ci_logs_full
-    full_log_dir = "/home/deploy/ci_logs_full/" + target + "-" + check_date + "/"
+    full_log_dir = "/home/deploy/ci_logs_full/" + target + "-" + check_date + "-" + benchmark + "/"
     os.system("rm -rf " + full_log_dir) 
     os.system("mkdir " + full_log_dir) 
     output = full_log_dir + benchmark + "." + check_date + "." + target + ".log"
