@@ -65,6 +65,8 @@ def main(tool_id, target, benchmark, commit):
     print(sql)
     insert_sql(sql)
 
+    insert_sql("UPDATE tools SET lastest_commit=\'" + commit + "\' WHERE id=" + tool_id + ";")
+
     # Parse log to ci_logs_full
     full_log_dir = "/home/deploy/ci_logs_full/" + target + "-" + check_date + "-" + benchmark + "/"
     os.system("rm -rf " + full_log_dir) 
