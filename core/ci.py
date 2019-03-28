@@ -32,8 +32,8 @@ def get_targets():
     return run_sql("SELECT id FROM tools")
 
 def run_target(tid):
-    [tname, cycle, command, repo_url, branch_name] = \
-            run_sql("SELECT name, test_cycle, command, repo_url, branch_name FROM tools WHERE id=" + tid).replace("\n","").split(",")
+    [tname, cycle, command, repo_url, branch_name, commit] = \
+            run_sql("SELECT name, test_cycle, command, repo_url, branch_name, lastest_commit FROM tools WHERE id=" + tid).replace("\n","").split(",")
 
     # Get benchmarks
     benchmark_type = os.environ["CI_BENCHMARK_TYPE"]
@@ -59,6 +59,13 @@ def run_target(tid):
         logging.info(update_sql("UPDATE days_to_runs SET days = " + str(days_to_run) +" WHERE id=" + d_id))
         exit()
 
+    # Check if new commit
+    if len(commit) != 0 and commit != "-" and len(repo_url) != 0:
+        new_commit = os.popen("git ls-remote " + repo_url + " HEAD").read()
+        if commit in new_commit:
+            logging.info(tname + " has no new commit, Skip")
+            logging.info("Succeeded: " + tname)
+            exit()
 
     # Fetch benchmark target and run
     benchmarks = run_sql("SELECT name from benchmark_names WHERE benchmark_type_id=" + benchmark_type_id + ";").splitlines()
