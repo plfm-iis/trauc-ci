@@ -11,5 +11,5 @@ then
     echo "Image name safe"
 else
     echo "Image duplicated, rmi it"
-    docker rmi ${TAG_NAME}:16.04
+    docker rmi ${TAG_NAME}:16.04 || echo "No image to delete"
 fi
