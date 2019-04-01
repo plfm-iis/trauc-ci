@@ -33,3 +33,4 @@ echo "endif " >> $TRAU_CONFIG
 cd "${TRAU_PATH}/build"; make
 sudo ln "${TRAU_PATH}/build/Trau" /usr/bin/${COMMAND_NAME}
 
+sudo ln ${HOME}/bin/z3 /usr/local/bin/z3
