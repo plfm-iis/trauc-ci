@@ -32,7 +32,7 @@ def main(tool_id, target, benchmark, commit):
 
     data = os.popen("cat " + log + " | tail -n 1").read().replace(" ", "")
     data = data.split("(")[1].split(")")[0]
-    tool_check_date, unsat, sat, timeout, misc = data.split(",")
+    tool_check_date, unsat, sat, timeout, unknown, exception, misc = data.split(",")
     check_date = tool_check_date.replace(target, "").replace("-", "")
 
     datetime = run_sql("SELECT now()").replace("\n", "")
@@ -48,7 +48,9 @@ def main(tool_id, target, benchmark, commit):
     sql = sql + "commit," 
     sql = sql + "sat, "
     sql = sql + "unsat," 
+    sql = sql + "unknown," 
     sql = sql + "timeout," 
+    sql = sql + "exception," 
     sql = sql + "misc)" 
     sql = sql + "VALUES (" + tool_id + ",\'" 
     sql = sql + datetime + "\',\'"
@@ -59,7 +61,9 @@ def main(tool_id, target, benchmark, commit):
     sql = sql + commit + "\',"
     sql = sql + sat + ","
     sql = sql + unsat + "," 
+    sql = sql + unknown + "," 
     sql = sql + timeout + "," 
+    sql = sql + exception + "," 
     sql = sql + misc + ")"
 
     print(sql)
