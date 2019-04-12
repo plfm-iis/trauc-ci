@@ -9,6 +9,11 @@ cd ${BENCHMARK_PATH}/
 DATE=$(date "+%Y%m%d")
 python3.6 check_benchmark -c=$TARGET "${BENCHMARK_TARGET}/" > /dev/null
 
+PWD="deploy"
+sudo apt-get install -y -f sshpass
+
+sshpass -p "$PWD" scp -r trace deploy@10.32.0.252:/home/deploy/traces/${TARGET}.${DATE}.${BENCHMARK_TARGET}
+
 if [ "${COMMAND_NAME}" == "z3-trau" ]
     TARGET="z3trau"
 then
