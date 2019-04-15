@@ -18,9 +18,9 @@ then
 fi
 
 if [ "${COMMAND_NAME}" == "z3-trau" ]
+then
     TARGET="z3trau"
 
-then
 fi
 
 cat ${BENCHMARK_TARGET}.${DATE}.${TARGET}.log
