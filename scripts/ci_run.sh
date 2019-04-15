@@ -9,7 +9,7 @@ cd ${BENCHMARK_PATH}/
 DATE=$(date "+%Y%m%d")
 python3.6 check_benchmark -c=$TARGET "${BENCHMARK_TARGET}/" > /dev/null
 
-if [ "${$TARGET}" == "trauc" ]
+if [ $TARGET == "trauc" ]
 then
     PWD="deploy"
     sudo apt-get install -y -f sshpass
