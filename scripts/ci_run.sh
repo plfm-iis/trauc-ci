@@ -12,7 +12,6 @@ python3.6 check_benchmark -c=$TARGET "${BENCHMARK_TARGET}/" > /dev/null
 if [ $TARGET == "trauc" ]
 then
     PASSWD=deploy
-    sudo apt-get install -y -f sshpass
     chmod 777 -R trace/
     sshpass -p $PASSWD scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r trace deploy@10.32.0.252:/home/deploy/traces/${TARGET}.${DATE}.${BENCHMARK_TARGET}
 fi
