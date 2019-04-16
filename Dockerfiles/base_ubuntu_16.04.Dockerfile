@@ -40,6 +40,8 @@ RUN apt-get update && \
 	mono-devel \
 	uuid-dev \
     unzip \
+    ssh \
+    sshpass \
 	sudo
 
 RUN add-apt-repository ppa:deadsnakes/ppa && \
