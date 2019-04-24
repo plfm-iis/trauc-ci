@@ -60,12 +60,14 @@ def run_target(tid):
         exit()
 
     # Check if new commit
+    """
     if len(commit) != 0 and commit != "-" and len(repo_url) != 0:
         new_commit = os.popen("git ls-remote " + repo_url + " HEAD").read()
         if commit in new_commit:
             logging.info(tname + " has no new commit, Skip")
             logging.info("Succeeded: " + tname)
             exit()
+    """
 
     # Fetch benchmark target and run
     benchmarks = run_sql("SELECT name from benchmark_names WHERE benchmark_type_id=" + benchmark_type_id + ";").splitlines()

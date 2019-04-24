@@ -33,4 +33,8 @@ echo "endif " >> $TRAU_CONFIG
 cd "${TRAU_PATH}/build"; make
 sudo ln "${TRAU_PATH}/build/Trau" /usr/bin/${COMMAND_NAME}
 
-sudo ln ${HOME}/bin/z3 /usr/local/bin/z3
+# Install newest z3 for Trau os system call
+cd $HOME
+wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.4/z3-4.8.4.d6df51951f4c-x64-debian-8.11.zip -O z3.zip
+unzip z3.zip -d z3_orig
+sudo ln "${HOME}/z3_orig/z3-4.8.4.d6df51951f4c-x64-debian-8.11/bin/z3" /usr/local/bin/z3
