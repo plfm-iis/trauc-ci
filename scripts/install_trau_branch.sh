@@ -38,3 +38,9 @@ cd $HOME
 wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.4/z3-4.8.4.d6df51951f4c-x64-debian-8.11.zip -O z3.zip
 unzip z3.zip -d z3_orig
 sudo ln "${HOME}/z3_orig/z3-4.8.4.d6df51951f4c-x64-debian-8.11/bin/z3" /usr/local/bin/z3
+
+# Install newest cvc4 for Trau os system call
+wget http://cvc4.cs.stanford.edu/downloads/builds/x86_64-linux-opt/cvc4-1.6-x86_64-linux-opt \
+        -O cvc4
+chmod +x cvc4
+sudo ln ${HOME}/cvc4 /usr/local/bin/cvc4
