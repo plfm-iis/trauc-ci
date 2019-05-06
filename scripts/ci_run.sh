@@ -13,7 +13,7 @@ if [ $TARGET == "trauc" ]
 then
     PASSWD=deploy
     chmod 777 -R trace/
-    sshpass -p $PASSWD scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r trace deploy@10.32.0.252:/home/deploy/traces/${TARGET}.${DATE}.${BENCHMARK_TARGET}
+    sshpass -p $PASSWD scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r trace deploy@10.32.1.7:/home/deploy/traces/${TARGET}.${DATE}.${BENCHMARK_TARGET}
 fi
 
 if [ "${TARGET}" == "z3-trau" ]
