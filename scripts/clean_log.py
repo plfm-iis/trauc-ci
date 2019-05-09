@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import sys
 import os
 
@@ -17,11 +17,13 @@ def main(path, num_to_keep, split_by):
         process_list.append(target)
         keyword = target.split(split_by)[2]
 
-        more_indexes = []
+        tmp_dirs = dirs.copy()
         for name in dirs:
             if keyword in name:
                 process_list.append(name)
-                dirs.remove(name)
+                tmp_dirs.remove(name)
+
+        dirs = tmp_dirs
 
         process_list = sorted(process_list, key=str.lower)
 
