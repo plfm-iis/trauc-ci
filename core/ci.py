@@ -54,6 +54,9 @@ def run_target(tid):
         days_to_run = cycle
         logging.info("Running ci for" + tname)
         logging.info(update_sql("UPDATE days_to_runs SET days = " + str(cycle) +" WHERE id=" + d_id))
+    elif days_to_run < 0:
+        logging.info("Skip " + tname)
+        exit()
     else:
         logging.info(str(days_to_run) + "/" + str(cycle) + " days for " + tname)
         logging.info(update_sql("UPDATE days_to_runs SET days = " + str(days_to_run) +" WHERE id=" + d_id))
