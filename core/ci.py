@@ -78,7 +78,7 @@ def run_target(tid):
     for benchmark_name in benchmarks:
         # Set commands
         if "cvc" in tname:
-            cmd = "cd $SCRIPT_HOME && ./scripts/run_by_cron.sh " + \
+            cmd = "cd $SCRIPT_HOME && ./scripts/run_cvc4_branch_by_cron.sh " + \
                     tname + " cvc4_ubuntu " + benchmark_name + " " + tid + " -" + " > /dev/null"
         elif tname == "trau":
             cmd = "cd $SCRIPT_HOME && ./scripts/run_trau_branch_by_cron.sh " + \
