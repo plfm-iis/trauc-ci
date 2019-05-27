@@ -77,14 +77,16 @@ def main(tool_id, target, benchmark, commit):
     os.system("mkdir " + full_log_dir) 
     output = full_log_dir + benchmark + "." + check_date + "." + target + ".log"
     os.system("touch " + output)
-    for line in os.popen("cat " + log).read().splitlines():
-        if "LOG.ERR" in line:
-            output = full_log_dir + benchmark + "." + check_date + "." + target + ".log.err"
-            os.system("touch " + output)
-        elif "LOG.END" in line:
-            break
-        else:
-            os.system("echo \"" + line + "\" >> " + output)
+    with open(log, "r") as source:
+        lines = source.read().splitlines()
+        for line in lines:
+            if "LOG.ERR" in line:
+                output = full_log_dir + benchmark + "." + check_date + "." + target + ".log.err"
+                os.system("touch " + output)
+            elif "LOG.END" in line:
+                break
+            else:
+                os.system("echo \"" + line + "\" >> " + output)
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:

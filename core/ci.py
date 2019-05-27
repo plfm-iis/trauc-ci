@@ -79,7 +79,7 @@ def run_target(tid):
         # Set commands
         if "cvc" in tname:
             cmd = "cd $SCRIPT_HOME && ./scripts/run_cvc4_branch_by_cron.sh " + \
-                    tname + " cvc4_ubuntu " + benchmark_name + " " + tid + " -" + " > /dev/null"
+                    tname + " " + benchmark_name + " " + tid + " " + repo_url  + " " + branch_name + " > /dev/null"
         elif tname == "trau":
             cmd = "cd $SCRIPT_HOME && ./scripts/run_trau_branch_by_cron.sh " + \
                     tname + " " + benchmark_name + " " + tid + " " + repo_url + " " + branch_name +  " > /dev/null"
