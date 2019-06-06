@@ -48,6 +48,14 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y python3.6 python3-pip
 
+# Install dotnet runtime
+RUN wget -q https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \
+    apt-get install apt-transport-https && \
+    add-apt-repository universe && \
+    apt-get update && \
+    apt-get -y install dotnet-sdk-2.2
+
 RUN pip3 install argparse typing
 
 # Create `user` user for container with password `user`.  and give it
