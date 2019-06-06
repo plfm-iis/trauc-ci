@@ -87,6 +87,9 @@ def main(tool_id, target, benchmark, commit):
                 break
             else:
                 os.system("echo \"" + line + "\" >> " + output)
+    ip_address = os.popen("hostname -i").read()
+    if "10.32.0.207" not in ip_address:
+        os.system("scp -r " + full_log_dir + " deploy@10.32.0.207:/home/deploy/ci_logs_full/")
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
