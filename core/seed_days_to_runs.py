@@ -25,9 +25,8 @@ def insert_sql(sql):
             -c" + "\"" + sql + "\"").read()
 
 def main():
-    #os.environ["PGPASSWORD"] = os.environ["CI_DB_PASSWORD"]
-    os.environ["PGPASSWORD"] = "pguser"
-    type_name = os.environ["CI_DB_PASSWORD"]
+    os.environ["PGPASSWORD"] = os.environ["CI_DB_PASSWORD"]
+    type_name = os.environ["CI_BENCHMARK_TYPE"]
     type_id = run_sql("SELECT id FROM benchmark_types WHERE name=\'%s\';" % type_name).splitlines()[0]
     tool_ids = run_sql("SELECT id FROM tools;").splitlines()
 
