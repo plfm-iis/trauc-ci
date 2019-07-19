@@ -30,24 +30,32 @@ def main():
     type_id = run_sql("SELECT id FROM benchmark_types WHERE name=\'%s\';" % type_name).splitlines()[0]
     tool_ids = run_sql("SELECT id FROM tools;").splitlines()
 
-    datetime = run_sql("SELECT now()").replace("\n", "")
-    sql = "INSERT INTO days_to_runs"
-    sql = sql + "(tool_id, "
-    sql = sql + "benchmark_type_id, "
-    sql = sql + "days, "
-    sql = sql + "created_at, "
-    sql = sql + "updated_at) "
-    sql = sql + "VALUES (%s," 
-    sql = sql + type_id + ","
-    sql = sql + "%s,\'"
-    sql = sql + datetime + "\',\'"
-    sql = sql + datetime + "\');"
+    exists_ids = run_sql("SELECT id from days_to_runs WHERE benchmark_type_id=" + type_id + ";")
+    if len(exists_ids) == 0:
+        datetime = run_sql("SELECT now()").replace("\n", "")
+        sql = "INSERT INTO days_to_runs"
+        sql = sql + "(tool_id, "
+        sql = sql + "benchmark_type_id, "
+        sql = sql + "days, "
+        sql = sql + "created_at, "
+        sql = sql + "updated_at) "
+        sql = sql + "VALUES (%s," 
+        sql = sql + type_id + ","
+        sql = sql + "%s,\'"
+        sql = sql + datetime + "\',\'"
+        sql = sql + datetime + "\');"
 
-    cnt = 1
-    for tool_id in tool_ids:
-        print("Insert tool_id %s" % tool_id)
-        insert_sql(sql % (tool_id, cnt))
-        cnt += 1
+        cnt = 1
+        for tool_id in tool_ids:
+            print("Insert tool_id %s" % tool_id)
+            insert_sql(sql % (tool_id, cnt))
+            cnt += 1
+    else:
+        cnt = 1
+        for d_id in exists_ids.splitlines():
+            insert_sql("UPDATE days_to_runs SET days = " + str(cnt) +" WHERE id=" + d_id)
+            print("Set days_to_runs id=%s to %s" % (d_id, cnt))
+            cnt += 1
 
 
 if __name__ == "__main__":
