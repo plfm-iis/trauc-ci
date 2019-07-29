@@ -7,6 +7,19 @@ BENCHMARK_TARGET=$2
 cd ${BENCHMARK_PATH}/
 
 DATE=$(date "+%Y%m%d")
+if [ "${BENCHMARK_TARGET}" == "filtered_str_int" ]
+then
+    git clone https://github.com/spencerwuwu/str_int_benchmarks.git
+    rm -rf ${BENCHMARK_TARGET}
+    mv str_int_benchmarks/${BENCHMARK_TARGET} ./
+fi
+if [ "${BENCHMARK_TARGET}" == "full_str_int" ]
+then
+    git clone https://github.com/spencerwuwu/str_int_benchmarks.git
+    rm -rf ${BENCHMARK_TARGET}
+    mv str_int_benchmarks/${BENCHMARK_TARGET} ./
+fi
+
 python3.6 check_benchmark -c=$TARGET "${BENCHMARK_TARGET}/" > /dev/null
 
 if [ $TARGET == "trauc" ]
