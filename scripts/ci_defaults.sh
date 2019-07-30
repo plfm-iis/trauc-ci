@@ -15,5 +15,5 @@ CVC4_IMAGE="cvc4_ubuntu:16.04"
 Z3_SRC_DIR="/home/user/z3_src/"
 Z3_BUILD_DIR="/home/user/z3_build/"
 
-BENCHMARK_REPO="https://github.com/guluchen/z3.git"
+BENCHMARK_REPO="https://github.com/plfm-iis/trauc_benchmarks.git"
 BENCHMARK_PATH="/home/user/benchmarks/"
