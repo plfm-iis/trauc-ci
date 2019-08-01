@@ -2,8 +2,8 @@ FROM ubuntu:16.04
 
 ARG Z3_SRC_DIR
 ARG Z3_BUILD_DIR
-ARG BENCHMARK_REPO="https://github.com/guluchen/z3.git"
-ARG BENCHMARK_PATH="/benchmarks"
+ARG BENCHMARK_REPO
+ARG BENCHMARK_PATH
 
 ENV \
     Z3_SRC_DIR=${Z3_SRC_DIR} \
