@@ -19,7 +19,12 @@ set -e
 set -o pipefail
 
 # Get the latest commit hash
-get_commit
+if [[ ${REPO_URL} =~ 'github' ]]
+then
+    get_commit
+else
+    COMMIT_HASH='na'
+fi
 
 # Build an image with <repo_url> <branch> installed
 BUILD_OPTS=()
