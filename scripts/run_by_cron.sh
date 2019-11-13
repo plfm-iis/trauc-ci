@@ -42,6 +42,11 @@ docker run --rm -a STDOUT -a STDERR --name ${TAG_NAME} ${TMP_IMAGE} \
 > "${OUTPUT_DIR}/${TARGET}.${BENCHMARK_TARGET}.log"
 
 # Write results to postgresql
-python3 ${SCRIPT_DIR}/write_log_to_db.py ${TOOL_ID} ${TARGET} ${BENCHMARK_TARGET} ${COMMIT}
+if [ ${TOOL_ID} == '-1' ]
+then
+    python3 ${SCRIPT_DIR}/write_log_only.py ${TOOL_ID} ${TARGET} ${BENCHMARK_TARGET} ${COMMIT}
+else
+    python3 ${SCRIPT_DIR}/write_log_to_db.py ${TOOL_ID} ${TARGET} ${BENCHMARK_TARGET} ${COMMIT}
+fi
 
 docker rmi ${TMP_IMAGE} 
