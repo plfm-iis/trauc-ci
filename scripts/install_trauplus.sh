@@ -13,7 +13,8 @@ sudo apt -y install python
 # get trau+ source code
 wget https://zenodo.org/record/3384428/files/trau+.zip
 unzip trau+.zip
-cd ${HOME}/trau+
+mv trau+ trauplus
+cd ${HOME}/trauplus
 
 # modify install.sh
 sed -i '/deb/d' install.sh
