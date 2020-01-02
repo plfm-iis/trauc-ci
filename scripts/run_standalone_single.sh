@@ -32,6 +32,10 @@ if [ ${TARGET} == 'z3' ] || [ ${TARGET} == 'z3-trau' ] || [ ${TARGET} == 'trauc'
 then
     BUILD_OPTS+=("--build-arg" "SCRIPT=install_z3_branch.sh")
     BUILD_OPTS+=("--build-arg" "SCRIPT_ARGS=$REPO_URL $BRANCH $TARGET")
+elif [ ${TARGET} == 'cvc4' ]
+then 
+    BUILD_OPTS+=("--build-arg" "SCRIPT=install_cvc4_branch.sh")
+    BUILD_OPTS+=("--build-arg" "SCRIPT_ARGS=$REPO_URL $BRANCH $TARGET")
 else
     BUILD_OPTS+=("--build-arg" "SCRIPT=install_${TARGET}.sh")
     BUILD_OPTS+=("--build-arg" "SCRIPT_ARGS=")
