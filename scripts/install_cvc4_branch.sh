@@ -15,6 +15,7 @@ set -o pipefail
 git clone -b $BRANCH $REPO_URL CVC4
 cd CVC4 
 
+sudo apt update
 sudo apt -y install python-pip
 pip install toml
 ./contrib/get-antlr-3.4
