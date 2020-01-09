@@ -4,6 +4,7 @@ import os
 import sys
 import logging
 _base_dir = os.path.dirname(os.path.realpath(__file__))
+_child_limit = 2  # the max number of parallelly runing child processes
 
 def run_sql(sql):
     logging.info(sql)
@@ -48,7 +49,7 @@ def run_target(tid):
         days_to_run = int(days_to_run) - 1
 
     cycle = int(cycle)
-    
+
     # Check the execution cycle
     if days_to_run == 0:
         days_to_run = cycle
@@ -56,11 +57,11 @@ def run_target(tid):
         logging.info(update_sql("UPDATE days_to_runs SET days = " + str(cycle) +" WHERE id=" + d_id))
     elif days_to_run < 0:
         logging.info("Skip " + tname)
-        exit()
+        os._exit(0)
     else:
         logging.info(str(days_to_run) + "/" + str(cycle) + " days for " + tname)
         logging.info(update_sql("UPDATE days_to_runs SET days = " + str(days_to_run) +" WHERE id=" + d_id))
-        exit()
+        os._exit(0)
 
     # Check if new commit
     """
@@ -97,7 +98,7 @@ def run_target(tid):
         else:
             logging.info("Succeeded: " + tname + " " + benchmarks[i])
         i = i + 1
-    exit()
+    os._exit(0)
 
 
 def main():
@@ -107,15 +108,24 @@ def main():
 
     children = []
     for target in targets:
+        if len(children) >= _child_limit:  # max number of child processes reached, wait one to terminate before proceed
+            p = os.wait()
+            children.remove(p[0])
+
         child = os.fork()
         if child:
             children.append(child)
+            logging.info("Child process forked: " + str(child) + ", total child processes: " + str(len(children)))
         else:
             run_target(target)
             break
 
-    for child in children:
-        os.waitpid(child, 0)
+    while (len(children)>0):
+        p = os.wait()
+        children.remove(p[0])
+
+#    for child in children:
+#        os.waitpid(child, 0)
 
 
 if __name__ == '__main__':
@@ -125,3 +135,4 @@ if __name__ == '__main__':
 
     main()
     logging.info("=== All for today !!===")
+
