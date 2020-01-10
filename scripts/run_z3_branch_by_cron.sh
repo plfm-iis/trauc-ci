@@ -25,9 +25,10 @@ get_commit
 BUILD_OPTS=()
 BUILD_OPTS+=("--build-arg" "SCRIPT=install_z3_branch.sh")
 BUILD_OPTS+=("--build-arg" "SCRIPT_ARGS=$REPO_URL $BRANCH $TARGET")
-TARGET_IMAGE="${TARGET}:16.04"
+BENCH_SMALL="$(echo ${BENCHMARK} | tr '[:upper:]' '[:lower:]')"
+TARGET_IMAGE="${TARGET}-${BENCH_SMALL}:16.04"
 
-${SCRIPT_DIR}/check_image_exsist.sh ${TARGET}
+${SCRIPT_DIR}/check_image_exsist.sh "${TARGET}-${BENCH_SMALL}"
 docker build \
   -m 4g \
   -q \
@@ -39,6 +40,6 @@ docker build \
   .
 
 # Run run_by_cron.sh with this image
-${SCRIPT_DIR}/run_by_cron.sh ${TARGET} ${TARGET} ${BENCHMARK} ${TOOL_ID} ${COMMIT_HASH}
+${SCRIPT_DIR}/run_by_cron.sh ${TARGET} "${TARGET}-${BENCH_SMALL}" ${BENCHMARK} ${TOOL_ID} ${COMMIT_HASH}
 
 docker rmi ${TARGET_IMAGE} 

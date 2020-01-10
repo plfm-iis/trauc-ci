@@ -112,9 +112,11 @@ def main():
     logging.info("Total commands collected: " + str(len(cmds)))
     for cmd in cmds:
         # Check if maximum number of child processes is reached. If yes, wait one to terminate.
-        if len(children) >= _child_limit:
+        while len(children) >= _child_limit:
             p = os.wait()
-            children.remove(p[0])
+            logging.info("terminated process: " + str(p[0]))
+            if p[0] in children:
+                children.remove(p[0])
 
         child = os.fork()
         if child:  # parent
@@ -132,9 +134,9 @@ def main():
     # wait for final childrens to terminate
     while len(children) > 0:
         p = os.wait()
-        children.remove(p[0])
-
-    logging.info("=== All for today !!===")
+        logging.info("terminated process: " + str(p[0]))
+        if p[0] in children:
+            children.remove(p[0])
 
 
 if __name__ == '__main__':
@@ -152,4 +154,5 @@ if __name__ == '__main__':
 
     main()
 
-    os.unlink(pidfile)
+    os.unlink(ci_pidfile)
+    logging.info("=== All for today !!===")
