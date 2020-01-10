@@ -6,6 +6,7 @@ import logging
 _base_dir = os.path.dirname(os.path.realpath(__file__))
 _child_limit = 2  # the max number of parallelly runing child processes
 
+
 def run_sql(sql):
     logging.info(sql)
     return os.popen("psql \
@@ -21,6 +22,7 @@ def run_sql(sql):
             --no-align \
             -c" + "\"" + sql + "\"").read()
 
+
 def update_sql(sql):
     logging.info(sql)
     return os.popen("psql \
@@ -29,10 +31,14 @@ def update_sql(sql):
             -d ci \
             -c" + "\"" + sql + "\"").read()
 
+
+# Get tool list
 def get_targets():
     return run_sql("SELECT id FROM tools")
 
-def run_target(tid):
+
+# For a given target tool (tid), update days-to-run and generate commands if activated for checking
+def process_target(tid):
     [tname, cycle, command, repo_url, branch_name, commit] = \
             run_sql("SELECT name, test_cycle, command, repo_url, branch_name, lastest_commit FROM tools WHERE id=" + tid).replace("\n","").split(",")
 
@@ -53,15 +59,15 @@ def run_target(tid):
     # Check the execution cycle
     if days_to_run == 0:
         days_to_run = cycle
-        logging.info("Running ci for" + tname)
+        logging.info("Running ci for " + tname)
         logging.info(update_sql("UPDATE days_to_runs SET days = " + str(cycle) +" WHERE id=" + d_id))
     elif days_to_run < 0:
         logging.info("Skip " + tname)
-        os._exit(0)
+        return []
     else:
         logging.info(str(days_to_run) + "/" + str(cycle) + " days for " + tname)
         logging.info(update_sql("UPDATE days_to_runs SET days = " + str(days_to_run) +" WHERE id=" + d_id))
-        os._exit(0)
+        return []
 
     # Check if new commit
     """
@@ -73,7 +79,7 @@ def run_target(tid):
             exit()
     """
 
-    # Fetch benchmark target and run
+    # Fetch benchmark target and return commands
     benchmarks = run_sql("SELECT name from benchmark_names WHERE benchmark_type_id=" + benchmark_type_id + ";").splitlines()
     cmds = []
     for benchmark_name in benchmarks:
@@ -87,18 +93,9 @@ def run_target(tid):
         else:
             cmd = "cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh " + \
                     tname + " " + benchmark_name + " " + tid + " " + repo_url  + " " + branch_name + " > /dev/null"
-        cmds.append(cmd)
+        cmds.append((cmd, tname, benchmark_name))
 
-    # Execute
-    i = 0
-    for cmd in cmds:
-        logging.info(cmd)
-        if os.system(cmd) != 0:
-            logging.info("Failed: " + tname + " " + benchmarks[i])
-        else:
-            logging.info("Succeeded: " + tname + " " + benchmarks[i])
-        i = i + 1
-    os._exit(0)
+    return cmds
 
 
 def main():
@@ -106,33 +103,53 @@ def main():
     os.environ["SCRIPT_HOME"] = "/home/deploy/ci_scripts/"
     targets = get_targets().splitlines()
 
-    children = []
+    # Collect commands of checking benchmarks
+    cmds = []  # a command is a tuple of (cmd, tool_name, benchmark_name)
     for target in targets:
-        if len(children) >= _child_limit:  # max number of child processes reached, wait one to terminate before proceed
+        cmds.extend(process_target(target))
+    # Execute commands by forking child processes
+    children = []
+    logging.info("Total commands collected: " + str(len(cmds)))
+    for cmd in cmds:
+        # Check if maximum number of child processes is reached. If yes, wait one to terminate.
+        if len(children) >= _child_limit:
             p = os.wait()
             children.remove(p[0])
 
         child = os.fork()
-        if child:
+        if child:  # parent
             children.append(child)
-            logging.info("Child process forked: " + str(child) + ", total child processes: " + str(len(children)))
-        else:
-            run_target(target)
-            break
+            logging.info("Child process forked: " + str(child) + ", cmd: " + cmd[0] +
+                         ", total child processes: " + str(len(children)))
+        else:  # child
+            logging.info(cmd[0])
+            if os.system(cmd[0]) != 0:
+                logging.info("Failed: " + cmd[1] + " " + cmd[2])
+            else:
+                logging.info("Succeeded: " + cmd[1] + " " + cmd[2])
+            os._exit(0)
 
-    while (len(children)>0):
+    # wait for final childrens to terminate
+    while len(children) > 0:
         p = os.wait()
         children.remove(p[0])
 
-#    for child in children:
-#        os.waitpid(child, 0)
+    logging.info("=== All for today !!===")
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='/home/deploy/ci_logs/str_ci.log',\
-            level=logging.INFO,\
-            format='%(asctime)s %(message)s')
+    logging.basicConfig(filename='/home/deploy/ci_logs/str_ci.log',
+                        level=logging.INFO, format='%(asctime)s %(message)s')
+
+    # Check if previous run exists
+    ci_pid = str(os.getpid())
+    ci_pidfile = "/home/deploy/ci_logs/str_ci.pid"
+    if os.path.isfile(ci_pidfile):
+        logging.info("Previous ci.py (" + str(ci_pid) + ") is still running, skip this run.")
+        sys.exit()
+    with open(ci_pidfile, 'w') as fp:
+        fp.write(ci_pid)
 
     main()
-    logging.info("=== All for today !!===")
 
+    os.unlink(pidfile)
