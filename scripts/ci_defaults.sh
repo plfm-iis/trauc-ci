@@ -4,6 +4,7 @@
 OUTPUT_DIR="${HOME}/output/"
 DOCKER_FILE_DIR="$(cd ${SCRIPT_DIR}/../Dockerfiles/; echo $PWD)"
 S_SCRIPT_DOCKER_FILE="${DOCKER_FILE_DIR}/build_single_script.Dockerfile"
+BENCHMARK_HOME="${HOME}/benchmarks/"
 
 BASE_IMAGE_NAME="base_ubuntu:16.04"
 Z3_DOCKER_IMAGE="z3_ubuntu:16.04"
@@ -16,4 +17,4 @@ Z3_SRC_DIR="/home/user/z3_src/"
 Z3_BUILD_DIR="/home/user/z3_build/"
 
 BENCHMARK_REPO="https://github.com/plfm-iis/trauc_benchmarks.git"
-BENCHMARK_PATH="/home/user/benchmarks/"
+BENCHMARK_PATH="/home/user/benchmarks"

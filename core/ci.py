@@ -4,7 +4,7 @@ import os
 import sys
 import logging
 _base_dir = os.path.dirname(os.path.realpath(__file__))
-_child_limit = 2  # the max number of parallelly runing child processes
+_child_limit = 3  # max number of running child processes in parallel
 
 
 def run_sql(sql):
@@ -40,7 +40,8 @@ def get_targets():
 # For a given target tool (tid), update days-to-run and generate commands if activated for checking
 def process_target(tid):
     [tname, cycle, command, repo_url, branch_name, commit] = \
-            run_sql("SELECT name, test_cycle, command, repo_url, branch_name, lastest_commit FROM tools WHERE id=" + tid).replace("\n","").split(",")
+            run_sql(f'SELECT name, test_cycle, command, repo_url, branch_name, '
+                    f'lastest_commit FROM tools WHERE id={tid}').replace("\n","").split(",")
 
     # Get benchmarks
     benchmark_type = os.environ["CI_BENCHMARK_TYPE"]
@@ -63,11 +64,11 @@ def process_target(tid):
         logging.info(update_sql("UPDATE days_to_runs SET days = " + str(cycle) +" WHERE id=" + d_id))
     elif days_to_run < 0:
         logging.info("Skip " + tname)
-        return []
+        return [], "", ""
     else:
         logging.info(str(days_to_run) + "/" + str(cycle) + " days for " + tname)
         logging.info(update_sql("UPDATE days_to_runs SET days = " + str(days_to_run) +" WHERE id=" + d_id))
-        return []
+        return [], "", ""
 
     # Check if new commit
     """
@@ -80,36 +81,34 @@ def process_target(tid):
     """
 
     # Fetch benchmark target and return commands
-    benchmarks = run_sql("SELECT name from benchmark_names WHERE benchmark_type_id=" + benchmark_type_id + ";").splitlines()
-    cmds = []
+    benchmarks = run_sql(f'SELECT name from benchmark_names WHERE benchmark_type_id={benchmark_type_id};').splitlines()
+    ci_cmds = []
     for benchmark_name in benchmarks:
         # Set commands
-        if "cvc" in tname:
-            cmd = "cd $SCRIPT_HOME && ./scripts/run_cvc4_branch_by_cron.sh " + \
-                    tname + " " + benchmark_name + " " + tid + " " + repo_url  + " " + branch_name + " > /dev/null"
-        elif tname == "trau":
-            cmd = "cd $SCRIPT_HOME && ./scripts/run_trau_branch_by_cron.sh " + \
-                    tname + " " + benchmark_name + " " + tid + " " + repo_url + " " + branch_name +  " > /dev/null"
-        else:
-            cmd = "cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh " + \
-                    tname + " " + benchmark_name + " " + tid + " " + repo_url  + " " + branch_name + " > /dev/null"
-        cmds.append((cmd, tname, benchmark_name))
+        # if "cvc" in tname:
+        #     ci_cmd = f'cd $SCRIPT_HOME && ./scripts/run_cvc4_branch_by_cron.sh ' \
+        #              f'{tname} {benchmark_name} {tid} {repo_url} {branch_name} > /dev/null'
+        # elif tname == "trau":
+        #     ci_cmd = f'cd $SCRIPT_HOME && ./scripts/run_trau_branch_by_cron.sh ' \
+        #              f'{tname} {benchmark_name} {tid} {repo_url} {branch_name} > /dev/null'
+        # else:
+        #     ci_cmd = f'cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh ' \
+        #              f'{tname} {benchmark_name} {tid} {repo_url} {branch_name} > /dev/null'
+        ci_cmd = f'cd $SCRIPT_HOME && ./scripts/run_by_cron.sh {tname} {benchmark_name} {tid} > /dev/null'
+        ci_cmds.append((ci_cmd, tname, benchmark_name))
 
-    return cmds
+    img_build_cmd = f'cd $SCRIPT_HOME && ./scripts/build_docker_image.sh {tname} {repo_url} {branch_name} > /dev/null'
+    img_remove_cmd = f'docker rmi {tname}:16.04 && rm {tname}.commit > /dev/null'
+
+    return ci_cmds, img_build_cmd, img_remove_cmd
 
 
-def main():
-    os.environ["PGPASSWORD"] = os.environ["CI_DB_PASSWORD"]
-    os.environ["SCRIPT_HOME"] = "/home/deploy/ci_scripts/"
-    targets = get_targets().splitlines()
+def run_cmds_in_parallel(cmds=[]):  # cmds: list of 3-tuples
+    logging.info("Total number of commands: " + str(len(cmds)))
+    if len(cmds) == 0:
+        return
 
-    # Collect commands of checking benchmarks
-    cmds = []  # a command is a tuple of (cmd, tool_name, benchmark_name)
-    for target in targets:
-        cmds.extend(process_target(target))
-    # Execute commands by forking child processes
     children = []
-    logging.info("Total commands collected: " + str(len(cmds)))
     for cmd in cmds:
         # Check if maximum number of child processes is reached. If yes, wait one to terminate.
         while len(children) >= _child_limit:
@@ -131,12 +130,51 @@ def main():
                 logging.info("Succeeded: " + cmd[1] + " " + cmd[2])
             os._exit(0)
 
-    # wait for final childrens to terminate
+    # wait for remaining children to terminate
     while len(children) > 0:
         p = os.wait()
         logging.info("terminated process: " + str(p[0]))
         if p[0] in children:
             children.remove(p[0])
+
+
+def run_cmds_in_serial(cmds=[]):
+    logging.info("Total number of commands: " + str(len(cmds)))
+    if len(cmds) == 0:
+        return
+
+    for cmd in cmds:
+        logging.info(cmd)
+        os.system(cmd)
+
+
+def main():
+    os.environ["PGPASSWORD"] = os.environ["CI_DB_PASSWORD"]
+    os.environ["SCRIPT_HOME"] = "/home/deploy/ci_scripts/"
+    os.environ["BENCHMARK_HOME"] = "/home/deploy/benchmarks/"
+    targets = get_targets().splitlines()
+
+    # Collect commands of checking benchmarks
+    ci_cmds = []  # a command is a tuple of (cmd, tool_name, benchmark_name)
+    img_build_cmds = []  # commands for building docker images of tools
+    img_remove_cmds = []  # command for removing docker images of tools
+    for target in targets:
+        cmds1, img_cmd1, img_cmd2 = process_target(target)
+        if len(cmds1) != 0:
+            ci_cmds.extend(cmds1)
+            img_build_cmds.append(img_cmd1)
+            img_remove_cmds.append(img_cmd2)
+    # Execute commands by forking child processes
+    logging.info("Build tool images...")
+    # run_cmds_in_serial(img_build_cmds)  # build images of each tool
+    run_cmds_in_parallel([(a, a, '') for a in img_build_cmds])  # build images of each tool
+    os.system("git clone https://github.com/plfm-iis/trauc_benchmarks.git $BENCHMARK_HOME")  # install benchmarks
+    os.system("cp scripts/ci_run.sh $BENCHMARK_HOME")
+    logging.info("Run checking benchmarks...")
+    run_cmds_in_parallel(ci_cmds)  # run ci script for all tool-benchmark pairs
+    logging.info("Cleaning tool images and benchmarks...")
+    run_cmds_in_serial(img_remove_cmds)  # remove images of each tool
+    os.system("rm -rf $BENCHMARK_HOME")  # remove benchmarks
 
 
 if __name__ == '__main__':
