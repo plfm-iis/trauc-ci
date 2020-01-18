@@ -32,6 +32,7 @@ def main(path, num_to_keep, split_by):
             print("rm " + name)
             os.popen("rm -rf " + name).read()
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 4:
         print("./clean_log.py <PATH> <# to keep> <split_by>")

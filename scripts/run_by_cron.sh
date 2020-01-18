@@ -23,20 +23,7 @@ TAG_NAME="${TOOL}-${BENCH_SMALL}-tmp"
 read COMMIT < ${TOOL}.commit
 echo "Run ci on ${BENCHMARK} by ${TOOL}:${COMMIT}"
 
-# Build an image, remove it when all done
-# Install benchmarks to image
-
-#BENCHMARK_DOCKER_FILE="${DOCKER_FILE_DIR}/install_benchmarks.Dockerfile"
-#${SCRIPT_DIR}/check_image_exsist.sh ${TAG_NAME}
-#docker build \
-#  -m 4g \
-#  -q \
-#  -f "${BENCHMARK_DOCKER_FILE}" \
-#  -t "${TMP_IMAGE}" \
-#  "--build-arg" \
-#  "DOCKER_IMAGE_BASE=${TOOL_IMAGE}" \
-#  .
-
+# Run benchmark check via container from tool image
 docker run --rm -a STDOUT -a STDERR \
 -v ${BENCHMARK_HOME}:${BENCHMARK_PATH} \
 --name ${TAG_NAME} ${TOOL_IMAGE} \
@@ -49,5 +36,3 @@ then
 else
     python3 ${SCRIPT_DIR}/write_log_to_db.py ${TOOL_ID} ${TOOL} ${BENCHMARK} ${COMMIT}
 fi
-
-#docker rmi ${TMP_IMAGE}

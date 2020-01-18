@@ -2,6 +2,7 @@
 import sys
 import os
 
+
 def run_sql(sql):
     return os.popen("psql \
             -X \
@@ -16,6 +17,7 @@ def run_sql(sql):
             --no-align \
             -c" + "\"" + sql + "\"").read()
 
+
 def insert_sql(sql):
     return os.popen("psql \
             -X \
@@ -23,6 +25,7 @@ def insert_sql(sql):
             -h trauc-db -p 5432 \
             -d ci \
             -c" + "\"" + sql + "\"").read()
+
 
 # Usage ./write_log_to_db.py <Target id> <Target> <Benchmark> <commit>
 def main(tool_id, target, benchmark, commit):
@@ -36,7 +39,6 @@ def main(tool_id, target, benchmark, commit):
     check_date = tool_check_date.replace(target, "").replace("-", "")
 
     datetime = run_sql("SELECT now()").replace("\n", "")
-
 
     sql = "INSERT INTO test_results"
     sql = sql + "(tool_id, "
@@ -90,6 +92,7 @@ def main(tool_id, target, benchmark, commit):
     ip_address = os.popen("hostname -i").read()
     if "10.32.0.207" not in ip_address:
         os.system("scp -r " + full_log_dir + " deploy@10.32.0.207:/home/deploy/ci_logs_full/")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:

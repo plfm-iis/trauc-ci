@@ -84,16 +84,6 @@ def process_target(tid):
     benchmarks = run_sql(f'SELECT name from benchmark_names WHERE benchmark_type_id={benchmark_type_id};').splitlines()
     ci_cmds = []
     for benchmark_name in benchmarks:
-        # Set commands
-        # if "cvc" in tname:
-        #     ci_cmd = f'cd $SCRIPT_HOME && ./scripts/run_cvc4_branch_by_cron.sh ' \
-        #              f'{tname} {benchmark_name} {tid} {repo_url} {branch_name} > /dev/null'
-        # elif tname == "trau":
-        #     ci_cmd = f'cd $SCRIPT_HOME && ./scripts/run_trau_branch_by_cron.sh ' \
-        #              f'{tname} {benchmark_name} {tid} {repo_url} {branch_name} > /dev/null'
-        # else:
-        #     ci_cmd = f'cd $SCRIPT_HOME && ./scripts/run_z3_branch_by_cron.sh ' \
-        #              f'{tname} {benchmark_name} {tid} {repo_url} {branch_name} > /dev/null'
         ci_cmd = f'cd $SCRIPT_HOME && ./scripts/run_by_cron.sh {tname} {benchmark_name} {tid} > /dev/null'
         ci_cmds.append((ci_cmd, tname, benchmark_name))
 
