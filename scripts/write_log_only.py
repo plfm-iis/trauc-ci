@@ -18,18 +18,19 @@ def main(tool_id, target, benchmark, commit):
     output = full_log_dir + benchmark + "." + check_date + "." + target + ".log"
 
     os.system("rm -f " + output) # remove existing log
-    os.system("touch " + output)
+    output_fp = open(output, "w")
     with open(log, "r") as source:
         lines = source.read().splitlines()
         for line in lines:
             if "LOG.ERR" in line:
+                output_fp.close()
                 output = full_log_dir + benchmark + "." + check_date + "." + target + ".log.err"
-                os.system("rm -f " + output) # remove existing log
-                os.system("touch " + output)
+                output_fp = open(output, "w")
             elif "LOG.END" in line:
                 break
             else:
-                os.system("echo \"" + line + "\" >> " + output)
+                output_fp.write(line + '\n')
+    output_fp.close()
     # ip_address = os.popen("hostname -i").read()
     # if "10.32.0.207" not in ip_address:
     #    os.system("scp -r " + full_log_dir + " deploy@10.32.0.207:/home/deploy/ci_logs_full/")
