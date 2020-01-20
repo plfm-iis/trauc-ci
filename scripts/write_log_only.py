@@ -9,7 +9,8 @@ def main(tool_id, target, benchmark, commit):
     log_dir = os.environ["HOME"] + "/output/"
     log = log_dir + target + "." + benchmark + ".log"
 
-    data = os.popen("cat " + log + " | tail -n 1").read().replace(" ", "")
+    #    data = os.popen("cat " + log + " | tail -n 1").read().replace(" ", "")
+    data = os.popen(f'cat {log} | grep \({target}-').read().replace(" ", "")
     data = data.split("(")[1].split(")")[0]
     tool_check_date, sat, unsat, timeout, unknown, exception, misc = data.split(",")
     check_date = tool_check_date.replace(target, "").replace("-", "")
