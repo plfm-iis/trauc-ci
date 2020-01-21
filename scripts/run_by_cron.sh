@@ -2,7 +2,7 @@
 
 # This script should be set as cron job
 # Usage:
-#   ./run_by_cron.sh <TOOL> <BENCHMARK> <tool_id>
+#   ./run_by_cron.sh <TOOL> <BENCHMARK> <tool_id> <date>
 #   <BENCHMARK> should contain no '/' at its end
 
 
@@ -15,6 +15,7 @@ set -o pipefail
 TOOL=$1
 BENCHMARK=$2
 TOOL_ID=$3
+DATE=$4
 
 BENCH_SMALL="$(echo ${BENCHMARK} | tr '[:upper:]' '[:lower:]')"
 TOOL_IMAGE="${TOOL}:16.04"
@@ -28,7 +29,7 @@ docker run --rm -a STDOUT -a STDERR \
 -v ${BENCHMARK_HOME}:${BENCHMARK_PATH} \
 -u $(id -u):$(id -g) \
 --name ${TAG_NAME} ${TOOL_IMAGE} \
-"${BENCHMARK_PATH}/ci_run.sh" ${TOOL} ${BENCHMARK} > "${OUTPUT_DIR}/${TOOL}.${BENCHMARK}.log"
+"${BENCHMARK_PATH}/ci_run.sh" ${TOOL} ${BENCHMARK} ${DATE} > "${OUTPUT_DIR}/${TOOL}.${BENCHMARK}.log"
 
 # Write results to postgresql
 if [[ ${TOOL_ID} == '-1' ]]

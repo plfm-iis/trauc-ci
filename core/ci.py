@@ -3,6 +3,7 @@
 import os
 import sys
 import logging
+from datetime import datetime
 _base_dir = os.path.dirname(os.path.realpath(__file__))
 _child_limit = 3  # max number of running child processes in parallel
 
@@ -82,9 +83,10 @@ def process_target(tid):
 
     # Fetch benchmark target and return commands
     benchmarks = run_sql(f'SELECT name from benchmark_names WHERE benchmark_type_id={benchmark_type_id};').splitlines()
+    ci_date = datetime.today().strftime('%Y%m%d')
     ci_cmds = []
     for benchmark_name in benchmarks:
-        ci_cmd = f'cd $SCRIPT_HOME && ./scripts/run_by_cron.sh {tname} {benchmark_name} {tid} > /dev/null'
+        ci_cmd = f'cd $SCRIPT_HOME && ./scripts/run_by_cron.sh {tname} {benchmark_name} {tid} {ci_date} > /dev/null'
         ci_cmds.append((ci_cmd, tname, benchmark_name))
 
     img_build_cmd = f'cd $SCRIPT_HOME && ./scripts/build_docker_image.sh {tname} {repo_url} {branch_name} > /dev/null'
