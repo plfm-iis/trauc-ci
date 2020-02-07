@@ -16,15 +16,21 @@ set -e
 set -o pipefail
 
 # Get the latest commit hash
-TMPDIR=${TOOL}-${BRANCH}
-rm -rf $TMPDIR
-mkdir $TMPDIR
-git clone --branch $BRANCH $REPO_URL ${TMPDIR}
-cd ${TMPDIR}
-COMMIT_HASH="$(git log -1 --abbrev-commit --oneline $BRANCH | awk '{print $1}')"
-cd ../ && rm -rf ${TMPDIR}
-echo "Build tool image of ${TOOL}: commit hash=${COMMIT_HASH}"
-echo ${COMMIT_HASH} > ${TOOL}.commit  # write commit hash to file
+if [[ ${REPO_URL} =~ 'github' ]]
+then
+    TMPDIR=${TOOL}-${BRANCH}
+    rm -rf $TMPDIR
+    mkdir $TMPDIR
+    git clone --branch $BRANCH $REPO_URL ${TMPDIR}
+    cd ${TMPDIR}
+    COMMIT_HASH="$(git log -1 --abbrev-commit --oneline $BRANCH | awk '{print $1}')"
+    cd ../ && rm -rf ${TMPDIR}
+    echo "Build tool image of ${TOOL}: commit hash=${COMMIT_HASH}"
+    echo ${COMMIT_HASH} > ${TOOL}.commit  # write commit hash to file
+else
+    echo "Build tool image of ${TOOL}: url=${REPO_URL}"  # use repository url as commit
+    echo ${REPO_URL} > ${TOOL}.commit  # write commit hash to file
+fi
 
 # Build an image with <repo_url> <branch> installed, also install benchmarks too
 BUILD_OPTS=()
@@ -34,6 +40,15 @@ then
 elif [[ ${TOOL} == "trau" ]]
 then
     BUILD_OPTS+=("--build-arg" "SCRIPT=install_trau_branch.sh")
+elif [[ ${TOOL} == "trauplus" ]]
+then
+    BUILD_OPTS+=("--build-arg" "SCRIPT=install_trauplus.sh")
+elif [[ ${TOOL} == "abc" ]]
+then
+    BUILD_OPTS+=("--build-arg" "SCRIPT=install_abc.sh")
+elif [[ ${TOOL} == "ostrich" ]]
+then
+    BUILD_OPTS+=("--build-arg" "SCRIPT=install_ostrich.sh")
 else
     BUILD_OPTS+=("--build-arg" "SCRIPT=install_z3_branch.sh")
 fi
@@ -43,7 +58,7 @@ TOOL_IMAGE="${TOOL}:16.04"
 # delete image built for last run
 ${SCRIPT_DIR}/check_image_exsist.sh ${TOOL}
 
-# build image for this run (will not be deleted till next run does)
+# build image for this run
 docker build \
   -m 4g \
   -q \

@@ -22,3 +22,14 @@ sed -i '/cvc4/d' install.sh
 
 # build and install trau+
 sudo sh install.sh
+
+# copy bash script to /usr/bin
+cp trau+.sh trauplus
+sed -i -e 's/#!bin/#!\/bin/g' -e 's/LD_LIBRARY_PATH=/export LD_LIBRARY_PATH=/g' -e 's/runTrau+.py/\/home\/user\/trauplus\/runTrau+.py/g' trauplus
+sudo mv trauplus /usr/bin/
+sudo chmod 755 /usr/bin/trauplus
+
+# modify python script to use full path for sloth
+path1='./sloth/sloth'
+path2="${HOME}/trauplus/sloth/sloth"
+sed -i -e 's/timeout = 100000/timeout = 12/g' -e "s~${path1}~${path2}~g" runTrau+.py
