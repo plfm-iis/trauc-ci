@@ -7,8 +7,14 @@ BENCHMARK_TARGET=$2
 DATE=$3
 cd ${BENCHMARK_PATH}/
 
-# DATE=$(date "+%Y%m%d")
-
+# make a workspace dir and copy necessary files to run benchmark inside container
+BENCHMARK_NAME=$(echo ${BENCHMARK_TARGET} | cut -d'.' -f1)  # remove separated target like "benchmark.3.0"
+WORK_DIR=${HOME}/workspace
+mkdir ${WORK_DIR};
+cd ${WORK_DIR}
+cp -r ${BENCHMARK_PATH}/${BENCHMARK_NAME} ./
+cp ${BENCHMARK_PATH}/check_benchmark ./
+cp ${BENCHMARK_PATH}/compare_benchmark_logs ./
 python3.6 check_benchmark -c=${TARGET} -d=${DATE} "${BENCHMARK_TARGET}/" > /dev/null
 
 if [[ ${TARGET} == "trauc" ]]

@@ -27,7 +27,6 @@ echo "Run ci on ${BENCHMARK} by ${TOOL}:${COMMIT}"
 # Run benchmark check via container from tool image
 docker run --rm -a STDOUT -a STDERR \
 -v ${BENCHMARK_HOME}:${BENCHMARK_PATH} \
--u $(id -u):$(id -g) \
 --name ${TAG_NAME} ${TOOL_IMAGE} \
 "${BENCHMARK_PATH}/ci_run.sh" ${TOOL} ${BENCHMARK} ${DATE} > "${OUTPUT_DIR}/${TOOL}.${BENCHMARK}.log"
 
