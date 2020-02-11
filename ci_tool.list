@@ -1,0 +1,5 @@
+z3-trau https://github.com/guluchen/z3.git new_trau
+cvc4 https://github.com/CVC4/CVC4.git master
+z3seq https://github.com/Z3Prover/z3.git master
+z3str3 https://github.com/Z3Prover/z3.git master
+trauplus https://zenodo.org/record/3384428/files/trau+.zip master

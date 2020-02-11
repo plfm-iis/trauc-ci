@@ -142,8 +142,10 @@ def run_cmds_in_serial(cmds=[]):
 
 def main():
     os.environ["PGPASSWORD"] = os.environ["CI_DB_PASSWORD"]
-    os.environ["SCRIPT_HOME"] = "/home/deploy/ci_scripts/"
-    os.environ["BENCHMARK_HOME"] = "/home/deploy/benchmarks/"
+    script_path = f'{os.environ["HOME"]}/ci_scripts/'
+    benchmark_path = f'{os.environ["HOME"]}/benchmarks/'
+    os.environ["SCRIPT_HOME"] = script_path
+    os.environ["BENCHMARK_HOME"] = benchmark_path
     targets = get_targets().splitlines()
 
     # Collect commands of checking benchmarks
@@ -170,12 +172,13 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='/home/deploy/ci_logs/str_ci.log',
+    ci_log_dir = f'{os.environ["HOME"]}/ci_logs'
+    logging.basicConfig(filename=f'{ci_log_dir}/str_ci.log',
                         level=logging.INFO, format='%(asctime)s %(message)s')
 
     # Check if previous run exists
     ci_pid = str(os.getpid())
-    ci_pidfile = "/home/deploy/ci_logs/str_ci.pid"
+    ci_pidfile = f'{ci_log_dir}/str_ci.pid'
     if os.path.isfile(ci_pidfile):
         logging.info("Previous ci.py (" + str(ci_pid) + ") is still running, skip this run.")
         sys.exit()
