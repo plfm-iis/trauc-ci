@@ -16,7 +16,7 @@ function run_in_ssh() { # $1: ip address
 sshpass -p $password ssh deploy@${ip} /bin/bash << EOF
     cd ci_scripts
     git remote set-url origin https://github.com/plfm-iis/trauc-ci.git
-    git pull origin master
+    git pull
     git checkout ${branch}
 EOF
 }
