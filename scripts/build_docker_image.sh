@@ -16,7 +16,17 @@ set -e
 set -o pipefail
 
 # Get the latest commit hash
-if [[ ${REPO_URL} =~ 'github' ]]
+if [[ ${TOOL} == "cvc4" ]]
+then
+    COMMIT_HASH="45bcf28a"  # fixed for pldi2020
+    echo "Build tool image of ${TOOL}: commit hash=${COMMIT_HASH}"
+    echo ${COMMIT_HASH} > ${TOOL}.commit  # write commit hash to file
+elif [[ ${TOOL} == "z3seq" ]] || [[ ${TOOL} == "z3str3" ]]
+then
+    COMMIT_HASH="d95b549ff"  # fixed for pldi2020
+    echo "Build tool image of ${TOOL}: commit hash=${COMMIT_HASH}"
+    echo ${COMMIT_HASH} > ${TOOL}.commit  # write commit hash to file
+elif [[ ${REPO_URL} =~ 'github' ]]
 then
     TMPDIR=${TOOL}-${BRANCH}
     rm -rf $TMPDIR
@@ -52,7 +62,7 @@ then
 else
     BUILD_OPTS+=("--build-arg" "SCRIPT=install_z3_branch.sh")
 fi
-BUILD_OPTS+=("--build-arg" "SCRIPT_ARGS=${REPO_URL} ${BRANCH} ${TOOL}")
+BUILD_OPTS+=("--build-arg" "SCRIPT_ARGS=${REPO_URL} ${BRANCH} ${TOOL} ${COMMIT_HASH}")
 TOOL_IMAGE="${TOOL}:16.04"
 
 # delete image built for last run
