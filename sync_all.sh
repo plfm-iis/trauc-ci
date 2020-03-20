@@ -18,6 +18,7 @@ sshpass -p $password ssh deploy@${ip} /bin/bash << EOF
     git remote set-url origin https://github.com/plfm-iis/trauc-ci.git
     git pull
     git checkout ${branch}
+    git pull
 EOF
 }
 
