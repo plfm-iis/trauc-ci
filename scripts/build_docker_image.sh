@@ -23,8 +23,8 @@ then
     echo ${COMMIT_HASH} > ${TOOL}.commit  # write commit hash to file
 elif [[ ${TOOL} == "z3seq" ]] || [[ ${TOOL} == "z3str3" ]]
 then
-    # COMMIT_HASH="d95b549ff"  # fixed for pldi2020
-    COMMIT_HASH="6ad261e24"  # fixed for pldi2020
+    COMMIT_HASH="d95b549ff"  # fixed for pldi2020
+    # COMMIT_HASH="6ad261e24"  # fixed for pldi2020
     echo "Build tool image of ${TOOL}: commit hash=${COMMIT_HASH}"
     echo ${COMMIT_HASH} > ${TOOL}.commit  # write commit hash to file
 elif [[ ${REPO_URL} =~ 'github' ]]
