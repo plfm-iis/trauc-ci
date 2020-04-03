@@ -27,11 +27,11 @@ then
     # COMMIT_HASH="6ad261e24"  # fixed for pldi2020
     echo "Build tool image of ${TOOL}: commit hash=${COMMIT_HASH}"
     echo ${COMMIT_HASH} > ${TOOL}.commit  # write commit hash to file
-elif [[ ${TOOL} == "z3-trau" ]]
-then
-    COMMIT_HASH="1e715b7da"  # fixed for pldi2020
-    echo "Build tool image of ${TOOL}: commit hash=${COMMIT_HASH}"
-    echo ${COMMIT_HASH} > ${TOOL}.commit  # write commit hash to file
+#elif [[ ${TOOL} == "z3-trau" ]]
+#then
+#    COMMIT_HASH="1e715b7da"  # fixed for pldi2020
+#    echo "Build tool image of ${TOOL}: commit hash=${COMMIT_HASH}"
+#    echo ${COMMIT_HASH} > ${TOOL}.commit  # write commit hash to file
 elif [[ ${REPO_URL} =~ 'github' ]]
 then
     TMPDIR=${TOOL}-${BRANCH}

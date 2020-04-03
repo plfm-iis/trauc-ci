@@ -23,7 +23,7 @@ fi
 # Clone & Build Z3
 git clone -b $BRANCH $REPO_URL ${Z3_SRC_DIR}
 
-if [[ ${COMMAND_NAME} == "z3seq" ]] || [[ ${COMMAND_NAME} == "z3str3" ]] || [[ ${COMMAND_NAME} == "z3-trau" ]] # for pldi2020
+if [[ ${COMMAND_NAME} == "z3seq" ]] || [[ ${COMMAND_NAME} == "z3str3" ]]  #|| [[ ${COMMAND_NAME} == "z3-trau" ]] # for pldi2020
 then
     cd ${Z3_SRC_DIR}
     git checkout ${COMMIT}
