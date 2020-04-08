@@ -23,8 +23,15 @@ fi
 git clone -b $BRANCH $REPO_URL ${Z3_SRC_DIR}
 cd ${Z3_BUILD_DIR}
 
-cmake -DCMAKE_BUILD_TYPE=Debug ${Z3_SRC_DIR}
+if [[ ${COMMAND_NAME} == "trauc" ]]  # debug mode for trauc only
+then
+    cmake -DCMAKE_BUILD_TYPE=Debug ${Z3_SRC_DIR}
+else
+    cmake ${Z3_SRC_DIR}
+fi
 make
+#cmake -DCMAKE_BUILD_TYPE=Debug ${Z3_SRC_DIR}
+#make
 
 if [ "${COMMAND_NAME}" == "trauc" ]
 then
