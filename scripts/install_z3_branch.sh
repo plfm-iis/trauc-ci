@@ -26,8 +26,15 @@ cd ${Z3_BUILD_DIR}
 if [[ ${COMMAND_NAME} == "trauc" ]]  # debug mode for trauc only
 then
     cmake -DCMAKE_BUILD_TYPE=Debug ${Z3_SRC_DIR}
-else
+elif [ "${COMMAND_NAME}" == "z3-trau" ]
+then
     cmake ${Z3_SRC_DIR}
+else
+    sudo apt update
+    apt -y install python
+    cd ${Z3_SRC_DIR}
+    ./configure
+    cd build
 fi
 make
 #cmake -DCMAKE_BUILD_TYPE=Debug ${Z3_SRC_DIR}
@@ -40,5 +47,6 @@ elif [ "${COMMAND_NAME}" == "z3-trau" ]
 then
     sudo ln "${Z3_BUILD_DIR}/z3" /usr/bin/${COMMAND_NAME}
 else
-    sudo ln "${Z3_BUILD_DIR}/z3" /usr/bin/z3
+    #sudo ln "${Z3_BUILD_DIR}/z3" /usr/bin/z3
+    sudo make install  # z3seq or z3str3
 fi
