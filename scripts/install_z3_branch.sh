@@ -31,7 +31,7 @@ then
     cmake ${Z3_SRC_DIR}
 else
     sudo apt update
-    apt -y install python
+    sudo apt -y install python
     cd ${Z3_SRC_DIR}
     ./configure
     cd build
